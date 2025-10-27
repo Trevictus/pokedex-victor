@@ -1,5 +1,7 @@
 const API_URL = "https://pokeapi.co/api/v2/pokemon/";
+const API_LIST_URL = "https://pokeapi.co/api/v2/pokemon/?limit=1000";
 
+const dataList = document.getElementById('pokemonNombres');
 const input = document.getElementById("campoDeTexto");
 const button = document.getElementById("buscar");
 
@@ -11,6 +13,30 @@ const outputs = {
   height: document.getElementById("alturavalor"),
   weight: document.getElementById("pesovalor"),
 }
+
+async function cargarListaPokemon() {
+  try {
+    const response = await fetch(API_LIST_URL);
+
+    if (!response.ok) {
+      throw new Error('Error al cargar la lista de Pokémon.');
+    }
+
+    const data = await response.json();
+
+    dataList.innerHTML = data.results.map(pokemon => {
+      const nombre = pokemon.name;
+
+      return `<option value="${nombre.charAt(0).toUpperCase() + nombre.slice(1)}">`;
+    }).join('');
+    console.log(`Lista de ${data.results.length} Pokémon cargada para el autocompletado.`);
+
+  } catch (error) {
+    console.error("No se pudo cargar la lista predictiva:", error);
+  }
+}
+
+cargarListaPokemon();
 
 button.addEventListener("click", async () => {
   const nombre = input.value.trim().toLowerCase();
